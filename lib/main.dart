@@ -29,7 +29,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   String player = 'X', winner = '';
-  bool buttonDisabled = false, gameEnd = false;
+  bool buttonDisabled = false, gameEnd = false, isdraw = false, win = false;
   int checkBoard = 0;
   List<String> grid = ['', '', '', '', '', '', '', '', ''];
 
@@ -61,9 +61,20 @@ class _MainScreenState extends State<MainScreen> {
         checkMove(2, 4, 6, currentPlayer)) {
       winner = currentPlayer;
       buttonDisabled = true;
+      win = true;
       gameEnd = true;
     }
     return winner;
+  }
+
+  bool draw() {
+    for (int i = 0; i < grid.length; i++) {
+      if (grid[i] == '') {
+        return false;
+      }
+    }
+    player = "";
+    return true;
   }
 
   @override
@@ -93,6 +104,13 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               )
             : const Text(''),
+        isdraw && win == false
+            ? const Text('Game draw!',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                ))
+            : const Text(''),
         SizedBox(
           height: MediaQuery.of(context).size.height / 2,
           width: MediaQuery.of(context).size.height / 2,
@@ -116,6 +134,7 @@ class _MainScreenState extends State<MainScreen> {
                       checkBoard = index;
                       player = changeTurn(player);
                       winner = checkWinner(player);
+                      isdraw = draw();
                     });
                   }
                 },
@@ -143,6 +162,8 @@ class _MainScreenState extends State<MainScreen> {
                 winner = "";
                 buttonDisabled = false;
                 gameEnd = false;
+                win = false;
+                isdraw = false;
               });
             },
             child: const Text('Reset'))
