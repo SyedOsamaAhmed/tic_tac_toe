@@ -28,8 +28,9 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  String player = 'X';
-
+  String player = 'X', winner = '';
+  bool buttonDisabled = false, gameEnd = false;
+  int checkBoard = 0;
   List<String> grid = ['', '', '', '', '', '', '', '', ''];
 
   String changeTurn(String currentPlayer) {
@@ -40,11 +41,30 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-// void checkWinner(int index){
+  bool checkMove(int index1, index2, index3, String currentPlayer) {
+    if (currentPlayer == grid[index1] &&
+        currentPlayer == grid[index2] &&
+        currentPlayer == grid[index3]) {
+      return true;
+    }
+    return false;
+  }
 
-//   if(grid[index]==grid[0])
-
-// }
+  String checkWinner(String currentPlayer) {
+    if (checkMove(0, 1, 2, currentPlayer) ||
+        checkMove(3, 4, 5, currentPlayer) ||
+        checkMove(6, 7, 8, currentPlayer) ||
+        checkMove(0, 3, 6, currentPlayer) ||
+        checkMove(1, 4, 7, currentPlayer) ||
+        checkMove(2, 5, 8, currentPlayer) ||
+        checkMove(0, 4, 8, currentPlayer) ||
+        checkMove(2, 4, 6, currentPlayer)) {
+      winner = currentPlayer;
+      buttonDisabled = true;
+      gameEnd = true;
+    }
+    return winner;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +84,15 @@ class _MainScreenState extends State<MainScreen> {
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.05,
         ),
+        buttonDisabled == true && winner.isNotEmpty
+            ? Text(
+                '$winner wins!',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                ),
+              )
+            : const Text(''),
         SizedBox(
           height: MediaQuery.of(context).size.height / 2,
           width: MediaQuery.of(context).size.height / 2,
@@ -76,17 +105,22 @@ class _MainScreenState extends State<MainScreen> {
             itemCount: grid.length,
             itemBuilder: (context, index) {
               return InkWell(
-                splashColor: Color.fromARGB(255, 29, 25, 25),
+                splashColor: const Color.fromARGB(255, 29, 25, 25),
                 onTap: () {
-                  if (grid[index] == '') {
+                  if (gameEnd == true) {
+                    return;
+                  }
+                  if (grid[index] == '' && buttonDisabled == false) {
                     setState(() {
                       grid[index] = player;
+                      checkBoard = index;
                       player = changeTurn(player);
+                      winner = checkWinner(player);
                     });
                   }
                 },
                 child: Ink(
-                  color: Color.fromARGB(255, 158, 164, 168),
+                  color: const Color.fromARGB(255, 158, 164, 168),
                   child: Center(
                     child: Text(
                       grid[index].toString(),
@@ -101,6 +135,17 @@ class _MainScreenState extends State<MainScreen> {
             },
           ),
         ),
+        TextButton(
+            onPressed: () {
+              setState(() {
+                grid = ['', '', '', '', '', '', '', '', ''];
+                player = "";
+                winner = "";
+                buttonDisabled = false;
+                gameEnd = false;
+              });
+            },
+            child: const Text('Reset'))
       ]),
     );
   }
