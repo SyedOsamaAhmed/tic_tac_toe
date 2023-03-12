@@ -30,7 +30,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   String player = 'X', winner = '';
   bool buttonDisabled = false, gameEnd = false, isdraw = false, win = false;
-  int checkBoard = 0;
+
   List<String> grid = ['', '', '', '', '', '', '', '', ''];
 
   String changeTurn(String currentPlayer) {
@@ -69,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
 
   bool draw() {
     for (int i = 0; i < grid.length; i++) {
-      if (grid[i] == '') {
+      if (grid[i] == '' || win == true) {
         return false;
       }
     }
@@ -81,7 +81,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(children: [
+      body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         Center(
           child: Text(
             'Player Turn: $player',
@@ -131,7 +131,6 @@ class _MainScreenState extends State<MainScreen> {
                   if (grid[index] == '' && buttonDisabled == false) {
                     setState(() {
                       grid[index] = player;
-                      checkBoard = index;
                       player = changeTurn(player);
                       winner = checkWinner(player);
                       isdraw = draw();
@@ -153,6 +152,9 @@ class _MainScreenState extends State<MainScreen> {
               );
             },
           ),
+        ),
+        const SizedBox(
+          height: 12,
         ),
         TextButton(
             onPressed: () {
